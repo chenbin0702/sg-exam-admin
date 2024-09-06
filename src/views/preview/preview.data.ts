@@ -1,6 +1,6 @@
 import {BasicColumn, FormSchema} from '/@/components/Table';
 import {h, unref} from "vue";
-
+import {Tag} from "ant-design-vue";
 import {Tinymce} from "/@/components/Tinymce";
 import {
   editorHeight,
@@ -12,12 +12,13 @@ import {ExamMediaApi} from "/@/api/api";
 export const columns: BasicColumn[] = [
   {
     title: '序号',
+    dataIndex:'index',
     width: 50,
     customRender: ({index}) => index + 1,
   },
   {
     title: '课程名称',
-    dataIndex: 'courseName',
+    dataIndex: 'course',
     align: 'left',
   },
   {
@@ -29,13 +30,44 @@ export const columns: BasicColumn[] = [
     dataIndex: 'title',
   },
   {
-    title: '预习内容描述',
-    dataIndex: 'date',
+    title: '作业日期',
+    customRender: ({ record }) => {
+      let desc
+      try {
+        desc = JSON.parse(record.desc)
+        return desc.date
+      } catch (error) {
+        return ''
+      }
+    }
   },
   {
-    title:'作业描述',
-    dataIndex: 'remark',
-  }
+    title: '截止日期',
+    customRender: ({ record }) => {
+      let desc
+      try {
+        desc = JSON.parse(record.desc)
+        return desc.dueDate
+      } catch (error) {
+        return ''
+      }
+    }
+  },
+  {
+    title: '状态',
+    dataIndex: 'status',
+    slots: {
+      customRender: 'statusRender',
+    },
+    customRender: ({ record: { status } }) => {
+      const colors = ['red', 'green'];
+      const statusJson = {
+        '0': '未提交',
+        '1': '已提交',
+      };
+      return h(Tag, { color: colors[status] }, () => statusJson[status] || '--');
+    },
+    }
 ];
 
 export const searchFormSchema: FormSchema[] = [
@@ -61,7 +93,7 @@ export const searchFormSchema: FormSchema[] = [
 
 export const formSchema: FormSchema[] = [
   {
-    field: 'courseName',
+    field: 'course',
     label: '课程名称',
     component: 'Input',
     required: true,

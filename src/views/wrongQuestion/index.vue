@@ -126,9 +126,9 @@ export default defineComponent({
     }
     // 查看学生提交作业
     function handleSuccess(isUpdate) {
-      let msg = t("创建作业成功");
+      let msg = t("创建错题成功");
       if (isUpdate && !unref(isUpdate)) {
-        msg = "修改作业成功";
+        msg = "修改错题成功";
       }
       createMessage.success(msg);
       reload();

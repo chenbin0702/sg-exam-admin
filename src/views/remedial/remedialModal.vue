@@ -46,7 +46,10 @@ export default defineComponent({
       if (unref(isView)) {
         updateSchema(formSchema.map(item => ({ ...item, componentProps: { disabled: true }})));
       }
-   
+      else
+      {
+        updateSchema(formSchema.map(item => ({ ...item, componentProps: { disabled: false }})));
+      }
     });
     const getTitle = computed(() => {
       if (unref(isView)) {

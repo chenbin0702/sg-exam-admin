@@ -17,6 +17,7 @@
               icon: 'clarity:note-edit-line',
               tooltip: '修改',
               onClick: handleEdit.bind(null, record),
+              ifShow: record.status=='0',
             },
             {
               icon: 'ant-design:eye-outlined',
@@ -26,13 +27,15 @@
             {
               icon: 'ant-design:user-outlined',
               tooltip: '查看学生提交作业',
-              onClick: handleLook.bind(null, record),
+              onClick: handleLookHomework.bind(null, record),
+              ifShow: record.status=='1',
             },
           ]"
         />
       </template>
     </BasicTable>
     <HomeWorkModal @register="registerModal" @success="handleSuccess" />
+    <StudentWorkModal @register="registerImageModal" />
   </div>
 </template>
 
@@ -46,6 +49,7 @@ import { usePermission } from "/@/hooks/web/usePermission";
 import { useMessage } from "/@/hooks/web/useMessage";
 import { PopConfirmButton } from "/@/components/Button";
 import { homeworkList } from "/@/api/homework/index";
+import StudentWorkModal from "./StudentWorkModal.vue"
 import HomeWorkModal from "./HomeWorkModal.vue";
 export default defineComponent({
   name: "HomeworkIndex",
@@ -54,13 +58,14 @@ export default defineComponent({
     BasicTable,
     TableAction,
     HomeWorkModal,
+    StudentWorkModal
   },
   setup() {
     const { t } = useI18n();
     const { hasPermission } = usePermission();
     const { createMessage } = useMessage();
     const [registerModal, { openModal }] = useModal();
-    const [registerImageModal] = useModal();
+    const [registerImageModal,{openModal:openImageModal}] = useModal();
     const [registerTable, { reload, getSelectRows, clearSelectedRowKeys }] = useTable({
       title: "作业列表",
       api: homeworkList,
@@ -121,7 +126,6 @@ export default defineComponent({
         isView: true,
       });
     }
-    // 查看学生提交作业
     function handleSuccess(isUpdate) {
       let msg = t("创建作业成功");
       if (isUpdate && !unref(isUpdate)) {
@@ -130,7 +134,14 @@ export default defineComponent({
       createMessage.success(msg);
       reload();
     }
-
+    function handleLookHomework(record: Recordable)
+    {
+      let flies=JSON.parse(record.remark).flies
+      console.log(flies)
+      openImageModal(true,{
+        flies
+      })
+    }
     function handleUploadSuccess() {
       reload();
     }
@@ -159,6 +170,7 @@ export default defineComponent({
       handleLook,
       handleSuccess,
       handleUploadSuccess,
+      handleLookHomework
     };
   },
 });

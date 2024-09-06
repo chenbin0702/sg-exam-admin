@@ -46,13 +46,17 @@ export default defineComponent({
       if (unref(isView)) {
         updateSchema(formSchema.map(item => ({ ...item, componentProps: { disabled: true }})));
       }
+      else
+      {
+        updateSchema(formSchema.map(item => ({ ...item, componentProps: { disabled: false }})));
+      }
    
     });
     const getTitle = computed(() => {
       if (unref(isView)) {
-        return t('查看作业');
+        return t('查看错题');
       } else {
-        return !unref(isUpdate) ? t('添加作业') : t('修改作业');
+        return !unref(isUpdate) ? t('添加错题') : t('修改错题');
       }
     });
     async function handleSubmit() {

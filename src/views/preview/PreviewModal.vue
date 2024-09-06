@@ -38,6 +38,14 @@ export default defineComponent({
       isUpdate.value = !!data?.isUpdate;
       isView.value = !!data?.isView; // 新增：设置查看模式标志
       if (unref(isUpdate)|| unref(isView)) {
+        try {
+           data.record.files=JSON.parse(data.record.files)
+           data.record.date=JSON.parse(data.record.desc).date
+           data.record.descConetnt=JSON.parse(data.record.desc).descConetnt
+           data.record.dueDate=JSON.parse(data.record.desc).dueDate
+        } catch (err) {
+          
+        }
         setFieldsValue({
           ...data.record,
         });
@@ -67,7 +75,17 @@ export default defineComponent({
       try {
         const values = await validate();
         setModalProps({ confirmLoading: true });
-        id? values.id = id : null;
+        id? values.id = id : '';
+        values.status=values.status?values.status:0;
+        values.files=JSON.stringify(values.files);
+        let desc:any={
+          descConetnt: values.descConetnt,
+          dueDate: values.dueDate,
+          date: values.date,
+        }
+        desc = JSON.stringify(desc);
+        values.desc = desc;
+        console.log(values,"sdsadsad");
         await prepareSaveOrUpdate(values);
         console.log(values);
         closeModal();

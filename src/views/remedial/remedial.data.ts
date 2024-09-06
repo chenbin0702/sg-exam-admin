@@ -55,10 +55,6 @@ export const columns: BasicColumn[] = [
     title: '服务日期',
     dataIndex: 'serviceDate',
   },
-  {
-    title: '课后作业描述',
-    dataIndex: 'homeworkDescription',
-  },
 ];
 export const searchFormSchema: FormSchema[] = [
   {
