@@ -25,6 +25,10 @@
               onClick: handleLook.bind(null, record),
             },
             {
+              icon: 'ant-design:share-alt-outlined',
+              tooltip: '分享',
+            },
+            {
               icon: 'ant-design:user-outlined',
               tooltip: '查看学生提交作业',
               onClick: handleLookHomework.bind(null, record),

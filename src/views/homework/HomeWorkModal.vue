@@ -1,22 +1,28 @@
 <template>
   <BasicModal v-bind="$attrs" @register="registerModal" :title="getTitle" @ok="handleSubmit" width="70%">
-    <BasicForm @register="registerForm">
+    <BasicForm @register="registerForm"  v-bind="$attrs">
     </BasicForm>
   </BasicModal>
 </template>
 <script lang="ts">
 import { useI18n } from '/@/hooks/web/useI18n';
-import { defineComponent, ref, computed, unref } from 'vue';
+import { defineComponent, ref, computed, unref, reactive,watch } from 'vue';
 import { BasicModal, useModalInner } from '/@/components/Modal';
 import { BasicForm, useForm } from '/@/components/Form/index';
 import { formSchema } from './homework.data';
 import { homeworkSaveOrUpdate } from '/@/api/homework/index'
 import {  getSelectUserList } from "/@/api/sys/select";
 import { useMessage } from "/@/hooks/web/useMessage";
+import { updateGradeOptions,updateSubjectOptions } from '/@/data/grade'
 export default defineComponent({
   name: 'HomeWorkModal',
-  components: { BasicModal, BasicForm,  },
+  components: { BasicModal, BasicForm, },
   emits: ['success', 'register'],
+  watch: {
+    '$route.query.id': function (val) {
+      console.log(val);
+    },
+  },
   setup(_, { emit }) {
     const { t } = useI18n();
     const isUpdate = ref(true);
@@ -43,9 +49,12 @@ export default defineComponent({
           data.record.desc = remark.desc;
           data.record.dueDate = remark.dueDate;
           data.record.imageUrl = remark.imageUrl;
+          data.record.stage = remark.stage?remark.stage:'';
         } catch (error) {
            console.log(error);
         }
+        updateGradeOptions(data.record.stage,formSchema);
+        updateSubjectOptions(data.record.grade,formSchema);
         setFieldsValue({
           ...data.record,
         });
@@ -59,7 +68,6 @@ export default defineComponent({
       {
         updateSchema(formSchema.map(item => ({ ...item, componentProps: { disabled: false }})));
       }
-   
     });
     const getTitle = computed(() => {
       if (unref(isView)) {
@@ -80,6 +88,8 @@ export default defineComponent({
           desc: values.desc,
           dueDate: values.dueDate,
           imageUrl: values.imageUrl,
+          stage:values.stage,
+
         }
         remark = JSON.stringify(remark);
         values.remark = remark;
@@ -99,6 +109,8 @@ export default defineComponent({
       name.value = value;
     }
 
+  
+   
     return { searchParams, registerModal, registerForm, getTitle, handleSubmit, getSelectUserList, onSearch };
   },
 });
