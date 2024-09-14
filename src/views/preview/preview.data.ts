@@ -1,6 +1,6 @@
 import {BasicColumn, FormSchema} from '/@/components/Table';
 import {h, unref} from "vue";
-import {Tag} from "ant-design-vue";
+import {Tag,Select} from "ant-design-vue";
 import {Tinymce} from "/@/components/Tinymce";
 import {
   editorHeight,
@@ -9,6 +9,8 @@ import {
 } from "/@/components/Subjects/subject.constant";
 import { uploadApi } from '/@/api/attachment/attach';
 import {ExamMediaApi} from "/@/api/api";
+import { updateGradeOptions,updateSubjectOptions } from '/@/data/grade'
+import { getSelectUserList} from "/@/api/sys/select";
 export const columns: BasicColumn[] = [
   {
     title: '序号',
@@ -17,13 +19,25 @@ export const columns: BasicColumn[] = [
     customRender: ({index}) => index + 1,
   },
   {
+    title: '教育阶段',
+    dataIndex: 'stage',
+    customRender: ({ record }) => {
+      let desc=JSON.parse(record.desc);
+      return desc?.stage
+    }
+  },
+  {
+    title: '年级',
+    dataIndex: 'grade',
+  },
+  {
     title: '课程名称',
     dataIndex: 'course',
     align: 'left',
   },
   {
-    title: '年级',
-    dataIndex: 'grade',
+    title: '学生姓名',
+    dataIndex: 'studentName',
   },
   {
     title: '预习内容标题',
@@ -72,45 +86,184 @@ export const columns: BasicColumn[] = [
 
 export const searchFormSchema: FormSchema[] = [
   {
-    field: 'courseName',
-    label: '课程名称',
-    component: 'Input',
-    colProps: {span: 6},
+    field: 'stage',
+    label: '教育阶段',
+    component: 'Select',
+    componentProps: {
+      placeholder: '请选择教育阶段',
+      options: [
+        { label: '小学', value: '小学'},
+        { label: '初中', value: '初中'},
+        { label: '高中', value: '高中'},
+      ],
+      onChange: (value) => {
+         updateGradeOptions(value,searchFormSchema);
+      },
+      value:''
+    },
+    colProps: { span: 6 },
   },
   {
     field: 'grade',
     label: '年级',
-    component: 'Input',
-    colProps: {span: 6},
+    component: 'Select',
+    colProps: { span:6 },
+    componentProps: {
+      placeholder: '请选择年级',
+      options: [],
+      value:'',
+      onChange: (value: string) => {
+        // 根据选中的阶段更新年级选项
+        updateSubjectOptions(value,searchFormSchema,'course');
+      },
+    },
+  },
+  {
+    field: 'course',
+    label: '课程名称',
+    component: 'Select',
+    colProps: { span: 6 },
+    componentProps: {
+      placeholder: '请选择课程名称',
+      options: [],
+    },
   },
   {
     field: 'title',
-    label: '作业标题',
+    label: '预习标题',
     component: 'Input',
-    colProps: {span: 6},
+    colProps: { span: 6 },
+  },
+  {
+    field: 'date',
+    label: '作业日期',
+    helpMessage: ['作业日期'],
+    component: 'DatePicker',
+    componentProps: {
+      'show-time': true,
+      valueFormat: 'YYYY-MM-DD HH:mm:ss',
+      style: { width: '100%' },
+    },
+    colProps: { span: 6 },
+  },
+  {
+    field: 'status',
+    label: '状态',
+    component:'Select',
+    componentProps:{
+      options:[
+        {
+          label:'未完成',
+          value:'0'
+        },
+        {
+          label:'已完成',
+          value:'1'
+        }
+      ],
+      style: { width: '100%' },
+    },
+    colProps: { span: 6 },
+  },
+  {
+    field: 'studentId',
+    label: '学生',
+    component: 'ApiSelect',
+    colProps: { span: 6 },
+    componentProps: {
+      api: getSelectUserList,
+      showSearch:true,
+      resultField: 'list',
+      labelField:'name',
+      optionFilterProp:'label',
+      valueField:'id',
+      immediate:true,
+      numberToString:true,
+    },
   },
 ];
 
 export const formSchema: FormSchema[] = [
   {
-    field: 'course',
-    label: '课程名称',
-    component: 'Input',
-    required: true,
-    colProps: { span: 12 },   
+    field: 'stage',
+    label: '教育阶段',
+    component: 'Select',
+    componentProps:{      
+        value:''    
+    },
+   render: ({model,field}) => { {
+    return h(Select, {
+      placeholder: '请选择教育阶段',
+      options: [
+        { label: '小学', value: '小学'},
+        { label: '初中', value: '初中'},
+        { label: '高中', value: '高中'},
+      ],
+      value: model[field],
+      onChange: (value) => {   
+        model[field] = value;  
+        model['grade'] = '';
+        model['courseName'] = '';
+        updateGradeOptions(value,formSchema);
+      }
+    });
+  }
+   },
+    colProps: { span: 12 },
   },
   {
     field: 'grade',
     label: '年级',
-    component: 'Input',
+    component: 'Select',
     required: true,
     colProps: { span: 12 },
+    componentProps: {
+      placeholder: '请选择年级',
+      options: [],
+      value:'',
+      allowClear: true,
+      onChange: (value) => {
+        updateSubjectOptions(value,formSchema,'course');
+      },
+    },
+  },
+  {
+    field: 'course',
+    label: '课程名称',
+    component: 'Select',
+    required: true,
+    colProps: { span: 12 },
+    componentProps: {
+      placeholder: '请选择课程名称',
+      value:'',
+      options: [],
+      allowClear: true,
+      onChange:(value)=>{
+       
+      }
+      
+    },
+  },
+  {
+    field: 'studentId',
+    label: '学生',
+    component: 'ApiSelect',
+    colProps: { span: 12 },
+    componentProps: {
+      api: getSelectUserList,
+      showSearch:true,
+      resultField: 'list',
+      labelField:'name',
+      optionFilterProp:'label',
+      valueField:'id',
+      immediate:true,
+      numberToString:true,
+    },
   },
   {
     field: 'title',
     label: '预习内容标题',
     component: 'Input',
-    required: true,
     colProps: { span: 12 },
   },
   {

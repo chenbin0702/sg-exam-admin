@@ -45,6 +45,7 @@ export default defineComponent({
   name: 'MessageManagement',
   components: {BasicTable, MessageModal, TableAction},
   setup() {
+    console.log('MessageManagement setup');
     const {t} = useI18n();
     const {hasPermission} = usePermission();
     const [registerModal, {openModal}] = useModal();

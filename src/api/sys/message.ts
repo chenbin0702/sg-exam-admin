@@ -2,8 +2,11 @@ import {defHttp} from '/@/utils/http/axios';
 import {ApiRes} from "/@/api/constant";
 import {MessageApi, MessageReceiverApi, MessageReadApi} from "/@/api/api";
 
-export const getMessageList = (params?: object) =>
+export const getMessageList = (params?: object) =>{
   defHttp.get<ApiRes>({url: MessageApi.MessageList, params});
+
+}
+  
 
 export const getMessageInfo = (id: string, params?: object) =>
   defHttp.get<ApiRes>({url: MessageApi.Base + '/' + id, params});

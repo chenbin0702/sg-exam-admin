@@ -115,6 +115,10 @@
       type: String,
       default: UserService + 'v1/attachment/upload'
     },
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
   };
 
   export default defineComponent({
@@ -207,7 +211,8 @@
           editor.setMode(attrs.disabled ? 'readonly' : 'design');
         },
       );
-
+   
+      
       onMountedOrActivated(() => {
         if (!initOptions.value.inline) {
           tinymceId.value = buildShortUUID('tiny-vue');

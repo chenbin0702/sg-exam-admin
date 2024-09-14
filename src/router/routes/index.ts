@@ -35,12 +35,21 @@ export const LoginRoute: AppRouteRecordRaw = {
     title: t('routes.basic.login'),
   },
 };
-
+export const ShareHomeworkRoute: AppRouteRecordRaw = {
+  path: '/share/homework',
+  name: 'ShareHomework',
+  component: () => import('/@/views/homework/share/index.vue'),
+  meta: {
+    title: t('作业分享页'),
+  },
+}
 // Basic routing without permission
 export const basicRoutes = [
   LoginRoute,
   RootRoute,
+  ShareHomeworkRoute,
   ...mainOutRoutes,
+  
   REDIRECT_ROUTE,
   PAGE_NOT_FOUND_ROUTE,
 ];

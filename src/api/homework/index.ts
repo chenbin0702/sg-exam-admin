@@ -25,3 +25,10 @@ defHttp.get(
     }
   })
 
+// /v1/homework/delete/{id} 删除
+export const homeworkDelete = (id: string) =>
+defHttp.post(
+    {
+      url: prefix+'/v1/homework/delete/'+id,
+    },        
+  );

@@ -20,3 +20,11 @@ defHttp.get(
     }
   })
 
+  // /v1/prepare/delete/{id} 删除
+export const prepareDelete = (id: string) =>
+defHttp.post(
+    {
+      url: prefix+'/v1/prepare/delete/'+id,
+    },        
+  );
+

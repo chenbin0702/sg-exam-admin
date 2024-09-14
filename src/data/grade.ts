@@ -9,6 +9,8 @@ interface SchoolStage {
   grades: Grade[];
 }
 import { FormSchema} from '/@/components/Table';
+import { Select } from 'ant-design-vue';
+import {h, unref} from "vue";
 export const schoolStages: SchoolStage[] = [
   {
     stage: '小学',
@@ -216,17 +218,13 @@ export function updateGradeOptions(stage: string,formSchema: FormSchema[]) {
   const selectedStage = schoolStages.find(s => s.stage === stage);
   const stageField = formSchema.find(f => f.field === 'stage');
   stageField.componentProps.value = stage;
+  console.log('first', stageField)
   if (selectedStage) {
     const gradeField = formSchema.find(f => f.field === 'grade');
-    const courseNameField = formSchema.find(f => f.field === 'courseName');
-    if (gradeField && courseNameField) {
-      // 清空年级和课程的值
-      gradeField.componentProps.value = '';
-      courseNameField.componentProps.value = '';
-      // 清空课程的选项
-      courseNameField.componentProps.options = [];
+    if (gradeField ) {
       // 更新年级的选项
       gradeField.componentProps = gradeField.componentProps || {};
+      console.log('second', gradeField)
       gradeField.componentProps.options = selectedStage.grades.map(g => ({
         label:g.yearName,
         value:g.yearName,
@@ -235,17 +233,19 @@ export function updateGradeOptions(stage: string,formSchema: FormSchema[]) {
   } 
 }
 // 更新科目选项
-export function updateSubjectOptions(grade: string,formSchema: FormSchema[]) {
+export function updateSubjectOptions(grade: string,formSchema: FormSchema[],key='courseName') {
   const stageField = formSchema.find(f => f.field === 'stage');
+  console.log('first', stageField)
   const selectedStage = stageField && schoolStages.find(s => s.stage === stageField?.componentProps?.value);
-console.log('first', selectedStage)
+  console.log(selectedStage);
+  
   if (selectedStage) {
     const selectedGrade = selectedStage.grades.find(g => g.yearName == grade);
     if (selectedGrade) {
       const gradeField = formSchema.find(f => f.field === 'grade');
       gradeField.componentProps.value = grade;
       const subjects = Object.keys(selectedGrade.courses);
-      const subjectField = formSchema.find(f => f.field === 'courseName');
+      const subjectField = formSchema.find(f => f.field == key);
       if (subjectField) {
         subjectField.componentProps = subjectField.componentProps || {};
         subjectField.componentProps.options = subjects.map(subject => ({

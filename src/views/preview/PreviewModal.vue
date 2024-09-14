@@ -13,6 +13,8 @@ import { formSchema } from './preview.data';
 import { prepareSaveOrUpdate } from "/@/api/preview/index";
 import {  getSelectUserList } from "/@/api/sys/select";
 import { useMessage } from "/@/hooks/web/useMessage";
+import { updateGradeOptions, updateSubjectOptions } from '/@/data/grade'
+import {useUserStore} from "/@/store/modules/user";
 export default defineComponent({
   name: 'HomeWorkModal',
   components: { BasicModal, BasicForm,  },
@@ -20,6 +22,7 @@ export default defineComponent({
   setup(_, { emit }) {
     const { t } = useI18n();
     const isUpdate = ref(true);
+    const userStore=useUserStore()
     let id: string;
     const isView = ref(false); // 新增：查看模式标志
     const name = ref<string>('');
@@ -43,9 +46,12 @@ export default defineComponent({
            data.record.date=JSON.parse(data.record.desc).date
            data.record.descConetnt=JSON.parse(data.record.desc).descConetnt
            data.record.dueDate=JSON.parse(data.record.desc).dueDate
+           data.record.stage = JSON.parse(data.record.desc).stage ? JSON.parse(data.record.desc).stage : '';   
         } catch (err) {
           
         }
+        updateGradeOptions(data.record.stage, formSchema);
+        updateSubjectOptions(data.record.grade, formSchema);
         setFieldsValue({
           ...data.record,
         });
@@ -59,6 +65,13 @@ export default defineComponent({
         updateSchema(formSchema.map(item => ({ ...item, componentProps: { disabled: false }})));
       }
     });
+    const UserList = ref([]);
+    async function getSelectUserAllList() {
+      const {list} = await getSelectUserList();
+      UserList.value = list;
+    }
+
+    
     const getTitle = computed(() => {
       if (unref(isView)) {
         return t('查看预习');
@@ -82,12 +95,15 @@ export default defineComponent({
           descConetnt: values.descConetnt,
           dueDate: values.dueDate,
           date: values.date,
+          stage: values.stage,
         }
         desc = JSON.stringify(desc);
         values.desc = desc;
-        console.log(values,"sdsadsad");
+        values.creatId=userStore.userInfo?.id
+        values.creatName=userStore.userInfo?.name
+        values.studentName=UserList.value.find((item: { id: any; }) => item.id == values.studentId).name
         await prepareSaveOrUpdate(values);
-        console.log(values);
+        console.log(values,UserList.value);
         closeModal();
         emit('success', isUpdate);
       } finally {
@@ -98,7 +114,7 @@ export default defineComponent({
     function onSearch(value: string) {
       name.value = value;
     }
-
+    getSelectUserAllList();
     return { searchParams, registerModal, registerForm, getTitle, handleSubmit, getSelectUserList, onSearch };
   },
 });

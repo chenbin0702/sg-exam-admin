@@ -21,6 +21,7 @@
         const { columns, actionColumn, dataSource } = props;
         const columnList = [...columns, actionColumn];
         return (
+         <div class="table-container">
           <table class="file-table">
             <colgroup>
               {columnList.map((item) => {
@@ -64,16 +65,20 @@
               })}
             </tbody>
           </table>
+          </div>
         );
       };
     },
   });
 </script>
 <style lang="less">
+  .table-container{
+    overflow: auto;
+  }
   .file-table {
     width: 100%;
     border-collapse: collapse;
-
+    overflow-x: auto;
     .center {
       text-align: center;
     }

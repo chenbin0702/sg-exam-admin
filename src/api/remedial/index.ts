@@ -20,3 +20,10 @@ defHttp.get(
     }
   })
 
+  // /v1/remediation/delete/{id} 删除
+  export const remediationDelete = (id: string) =>
+  defHttp.post(
+      {
+        url: prefix+'/v1/remediation/delete/'+id,
+      },        
+    );
