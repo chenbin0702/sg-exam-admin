@@ -51,6 +51,7 @@ export default defineComponent({
       Type.value = data?.type;
       console.log(isView.value)
       if (unref(isUpdate) || unref(isView)) {
+        if(data.record.date)
         data.record.date= dayjs(data.record.date).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
         try {
           let remark = JSON.parse(data.record.remark);

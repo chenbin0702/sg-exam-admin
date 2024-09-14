@@ -10,9 +10,10 @@ import { defineComponent, ref, computed, unref } from 'vue';
 import { BasicModal, useModalInner } from '/@/components/Modal';
 import { BasicForm, useForm } from '/@/components/Form/index';
 import { formSchema } from './data';
-import { remediationSaveOrUpdate } from '/@/api/remedial/index'
+import { mistakesSaveOrUpdate } from '/@/api/wrong/index'
 import {  getSelectUserList } from "/@/api/sys/select";
 import { useMessage } from "/@/hooks/web/useMessage";
+import { updateGradeOptions, updateSubjectOptions } from '/@/data/grade'
 export default defineComponent({
   name: 'HomeWorkModal',
   components: { BasicModal, BasicForm,  },
@@ -38,6 +39,15 @@ export default defineComponent({
       isUpdate.value = !!data?.isUpdate;
       isView.value = !!data?.isView; // 新增：设置查看模式标志
       if (unref(isUpdate)|| unref(isView)) {
+        try {
+          let desc = JSON.parse(data.record.desc);
+          data.record.wrongDesc = desc.wrongDesc;
+          data.record.stage = desc.stage ? desc.stage : '';          
+        } catch (error) {
+          console.log(error);
+        }
+        updateGradeOptions(data.record.stage, formSchema);
+        updateSubjectOptions(data.record.grade, formSchema);
         setFieldsValue({
           ...data.record,
         });
@@ -67,9 +77,14 @@ export default defineComponent({
       }
       try {
         const values = await validate();
+        let desc={
+          wrongDesc:values.wrongDesc,
+          stage:values.stage,
+        }
+        values.desc=JSON.stringify(desc);
         setModalProps({ confirmLoading: true });
         id? values.id = id : null;
-        await remediationSaveOrUpdate(values);
+        await mistakesSaveOrUpdate(values);
         console.log(values);
         closeModal();
         emit('success', isUpdate);

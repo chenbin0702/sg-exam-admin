@@ -50,8 +50,7 @@ export const columns: BasicColumn[] = [
     title: '作业日期',
     dataIndex: 'date',
     customRender: ({ record }) => {
-      let date = dayjs(record.date);
-      return date.format('YYYY-MM-DD HH:mm:ss');
+      return record.date?dayjs(record.date).format('YYYY-MM-DD HH:mm:ss'):''
     }
   },
   {

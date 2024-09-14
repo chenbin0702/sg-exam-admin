@@ -7,28 +7,29 @@
         </a-button>
       </template>
       <template #action="{ record }">
-        <TableAction
-          :actions="[
-            {
-              icon: 'clarity:note-edit-line',
-              tooltip: '修改',
-              onClick: handleEdit.bind(null, record),
-             
-            },
-            {
-              icon: 'ant-design:eye-outlined',
-              tooltip: '查看',
-              onClick: handleLook.bind(null, record),
-              
-            },
-            {
-              icon: 'ant-design:user-outlined',
-              tooltip: '查看学生提交作业',
-              onClick: handleLook.bind(null, record),
-             
-            },
-          ]"
-        />
+        <TableAction :actions="[
+      {
+        icon: 'clarity:note-edit-line',
+        tooltip: '修改',
+        onClick: handleEdit.bind(null, record),
+
+      },
+      {
+        icon: 'ant-design:eye-outlined',
+        tooltip: '查看',
+        onClick: handleLook.bind(null, record),
+
+      },
+      {
+        icon: 'ant-design:delete-outlined',
+        tooltip: '删除',
+        color: 'error',
+        popConfirm: {
+          title: t('common.confirmDelText'),
+          confirm: handleDelete.bind(null, record),
+        },
+      },
+    ]" />
       </template>
     </BasicTable>
     <HomeWorkModal @register="registerModal" @success="handleSuccess" />
@@ -44,7 +45,7 @@ import { useI18n } from "/@/hooks/web/useI18n";
 import { usePermission } from "/@/hooks/web/usePermission";
 import { useMessage } from "/@/hooks/web/useMessage";
 import { PopConfirmButton } from "/@/components/Button";
-import { remediationList} from "/@/api/remedial";
+import { remediationList, remediationDelete } from "/@/api/remedial";
 import HomeWorkModal from "./remedialModal.vue";
 export default defineComponent({
   name: "HomeworkIndex",
@@ -62,7 +63,7 @@ export default defineComponent({
     const [registerImageModal] = useModal();
     const [
       registerTable,
-      {  reload, getSelectRows, clearSelectedRowKeys },
+      { reload, getSelectRows, clearSelectedRowKeys },
     ] = useTable({
       title: "补习列表",
       api: remediationList,
@@ -104,21 +105,20 @@ export default defineComponent({
     function handleCreate() {
       openModal(true, {
         isUpdate: false,
-        isView:false
+        isView: false
       });
     }
 
     function handleEdit(record: Recordable) {
-      console.log(record,11212112)
+      console.log(record, 11212112)
       openModal(true, {
         record,
         isUpdate: true,
-        isView:false,
+        isView: false,
       });
     }
     // 查看
-    function handleLook(record: Recordable)
-    {
+    function handleLook(record: Recordable) {
       openModal(true, {
         record,
         isView: true,
@@ -133,8 +133,15 @@ export default defineComponent({
       createMessage.success(msg);
       reload();
     }
-  
-  
+    /**
+     * 删除
+     */
+    async function handleDelete(record: Recordable) {
+      await remediationDelete(record.id);
+      createMessage.success(t("删除成功"));
+      reload();
+    }
+
 
     function handleUploadSuccess() {
       reload();
@@ -162,8 +169,9 @@ export default defineComponent({
       handleCreate,
       handleEdit,
       handleLook,
-      handleSuccess,   
+      handleSuccess,
       handleUploadSuccess,
+      handleDelete
     };
   },
 });

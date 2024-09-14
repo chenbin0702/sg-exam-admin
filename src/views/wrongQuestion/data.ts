@@ -9,11 +9,20 @@ import {
   tinymceToolbar
 } from "/@/components/Subjects/subject.constant";
 import { ExamMediaApi } from "/@/api/api";
+import { updateGradeOptions, updateSubjectOptions } from '/@/data/grade'
 export const columns: BasicColumn[] = [
-    {
+  {
     title: '序号',
     width: 50,
-    customRender: ({index}) => index + 1,
+    customRender: ({ index }) => index + 1,
+  },
+  {
+    title: '教育阶段',
+    dataIndex: 'stage',
+    customRender: ({ record }) => {
+      let remark = JSON.parse(record.desc);
+      return remark?.stage
+    }
   },
   {
     title: '年级',
@@ -26,7 +35,7 @@ export const columns: BasicColumn[] = [
   },
   {
     title: '错题描述',
-    dataIndex: 'desc',
+    dataIndex: 'wrongDesc',
   },
   {
     title: '关键点',
@@ -65,25 +74,47 @@ export const searchFormSchema: FormSchema[] = [
 
 export const formSchema: FormSchema[] = [
   {
+    field: 'stage',
+    label: '教育阶段',
+    component: 'Select',
+    componentProps: {
+      placeholder: '请选择教育阶段',
+      options: [
+        { label: '小学', value: '小学' },
+        { label: '初中', value: '初中' },
+        { label: '高中', value: '高中' },
+      ],
+      onChange: (value) => {
+        updateGradeOptions(value, formSchema);
+      },
+      value: ''
+    },
+    colProps: { span: 12 },
+  },
+  {
     field: 'grade',
     label: '年级',
-    component: 'Input',
-    required: true,
+    component: 'Select',
     colProps: { span: 12 },
+    componentProps: {
+      placeholder: '请选择年级',
+      options: [],
+      value: '',
+      onChange: (value: string) => {
+        // 根据选中的阶段更新年级选项
+        updateSubjectOptions(value, formSchema, 'course');
+      },
+    },
   },
   {
     field: 'course',
     label: '课程名称',
-    component: 'Input',
-    required: true,
+    component: 'Select',
     colProps: { span: 12 },
-  },
-  {
-    field: 'desc',
-    label: '描述',
-    component: 'Input',
-    required: false,
-    colProps: { span: 12 },
+    componentProps: {
+      placeholder: '请选择课程名称',
+      options: [],
+    },
   },
   {
     field: 'keyPoint',
@@ -95,6 +126,13 @@ export const formSchema: FormSchema[] = [
   {
     field: 'hardPoint',
     label: '难点',
+    component: 'Input',
+    required: false,
+    colProps: { span: 12 },
+  },
+  {
+    field: 'wrongDesc',
+    label: '错题描述',
     component: 'Input',
     required: false,
     colProps: { span: 12 },

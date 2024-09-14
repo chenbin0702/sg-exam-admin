@@ -25,7 +25,15 @@
               icon: 'ant-design:user-outlined',
               tooltip: '查看学生提交作业',
               onClick: handleLook.bind(null, record),
-             
+            },
+            {
+              icon: 'ant-design:delete-outlined',
+              tooltip: '删除',
+              color: 'error',
+              popConfirm: {
+                title: t('common.confirmDelText'),
+                confirm: handleDelete.bind(null, record),
+              },
             },
           ]"
         />
@@ -44,7 +52,7 @@ import { useI18n } from "/@/hooks/web/useI18n";
 import { usePermission } from "/@/hooks/web/usePermission";
 import { useMessage } from "/@/hooks/web/useMessage";
 import { PopConfirmButton } from "/@/components/Button";
-import { remediationList} from "/@/api/remedial";
+import { mistakesDelete,mistakesList} from "/@/api/wrong/index";
 import HomeWorkModal from "./wrongModal.vue";
 export default defineComponent({
   name: "HomeworkIndex",
@@ -65,7 +73,7 @@ export default defineComponent({
       {  reload, getSelectRows, clearSelectedRowKeys },
     ] = useTable({
       title: "错题列表",
-      api: remediationList,
+      api: mistakesList,
       columns,
       formConfig: {
         labelWidth: 120,
@@ -152,7 +160,12 @@ export default defineComponent({
       });
       return ids;
     }
-
+    // 删除
+    async function handleDelete(record: Recordable) {
+      await mistakesDelete(record.id);
+      createMessage.success(t("删除成功"));
+      reload();
+    }
     return {
       t,
       hasPermission,
@@ -164,6 +177,7 @@ export default defineComponent({
       handleLook,
       handleSuccess,   
       handleUploadSuccess,
+      handleDelete
     };
   },
 });
