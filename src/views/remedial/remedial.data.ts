@@ -87,6 +87,57 @@ export const columns: BasicColumn[] = [
     }
   },
 ];
+export const newColumns: BasicColumn[] = [
+  {
+    title: '序号',
+    width: 50,
+    customRender: ({ index }) => index + 1,
+  },
+  {
+    title: '服务日期',
+    dataIndex: 'serviceDate',
+    customRender: ({ record }) => {
+      return record.serviceDate?dayjs(record.serviceDate).format('YYYY-MM-DD HH:mm:ss'):''
+    }
+  },
+  {
+    title: '教育阶段',
+    dataIndex: 'stage',
+    customRender: ({ record }) => {
+      let desc=JSON.parse(record.desc);
+      return desc?.stage
+    }
+  },
+  {
+    title: '年级',
+    dataIndex: 'grade',
+  },
+  {
+    title: '课程名称',
+    dataIndex: 'course',
+  },
+  {
+    title: '学生姓名',
+    dataIndex: 'studentName',
+  },
+  {
+    title: '辅导时长',
+    dataIndex: 'hours',
+  },
+  {
+    title: '辅导单价（元）',
+    dataIndex: 'price',
+  },
+  {
+    title: '辅导总价（元）',
+    dataIndex: 'totalPrice',
+  },
+  {
+    title: '辅导老师',
+    dataIndex: 'teacherName',
+  },
+ 
+];
 export const searchFormSchema: FormSchema[] = [
   {
     field: 'stage',

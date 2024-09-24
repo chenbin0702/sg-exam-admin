@@ -18,7 +18,7 @@ export function createPermissionGuard(router: Router) {
   const userStore = useUserStoreWithOut();
   const permissionStore = usePermissionStoreWithOut();
   router.beforeEach(async (to, from, next) => {
-    if (to.path === '/share/homework') {
+    if (to.path === '/share/homework') {   
       next();
       return;
     }

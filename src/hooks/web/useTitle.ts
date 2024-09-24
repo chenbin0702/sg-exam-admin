@@ -6,6 +6,7 @@ import { useRouter } from 'vue-router';
 import { useLocaleStore } from '/@/store/modules/locale';
 
 import { REDIRECT_NAME } from '/@/router/constant';
+import dayjs from 'dayjs';
 
 /**
  * Listening to page changes and dynamically changing site titles
@@ -29,6 +30,12 @@ export function useTitle() {
 
       const tTitle = t(route?.meta?.title as string);
       pageTitle.value = tTitle ? ` ${tTitle} - ${title} ` : `${title}`;
+      if(route.path==='/share/homework'){
+        let query=route.query;
+        let date=query.date?dayjs(query.date).format('YYYY-MM-DD HH:mm:ss'):'';
+        let type=query.type==0?'学校作业':'补习作业';
+        pageTitle.value = ` ${type}:${query.title} -${query.grade}- ${query.courseName}- ${query.studentName} - ${date}`;
+      }
     },
     { immediate: true },
   );

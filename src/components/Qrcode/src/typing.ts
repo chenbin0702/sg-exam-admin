@@ -19,6 +19,7 @@ export interface RenderQrCodeParams {
   canvas: any;
   content: ContentType;
   width?: number;
+  heigth?: number;
   options?: QRCodeRenderersOptions;
   logo?: LogoType | string;
   image?: HTMLImageElement;

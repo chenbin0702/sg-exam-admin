@@ -13,8 +13,10 @@ import {
   tinymceToolbar
 } from "/@/components/Subjects/subject.constant";
 import {ExamMediaApi} from "/@/api/api";
-import { getSelectUserList} from "/@/api/sys/select";
+import { getUserList} from "/@/api/sys/user";
 import dayjs from 'dayjs';
+import moment from 'moment';
+import { filter } from '../../utils/helper/treeHelper';
 export const columns: BasicColumn[] = [
   {
     title:'序号',
@@ -59,7 +61,7 @@ export const columns: BasicColumn[] = [
       let remark
       try {
         remark = JSON.parse(record.remark)
-        return remark.dueDate
+        return dayjs(remark.dueDate).format('YYYY-MM-DD HH:mm:ss')
       } catch (error) {
         return ''
       }
@@ -170,9 +172,11 @@ export const searchFormSchema: FormSchema[] = [
     component: 'ApiSelect',
     colProps: { span: 6 },
     componentProps: {
-      api: getSelectUserList,
+      api: getUserList,
       showSearch:true,
       resultField: 'list',
+      params:{
+      },
       labelField:'name',
       optionFilterProp:'label',
       valueField:'id',
@@ -257,7 +261,7 @@ export const formSchema: FormSchema[] = [
     component: 'ApiSelect',
     colProps: { span: 12 },
     componentProps: {
-      api: getSelectUserList,
+      api: getUserList,
       showSearch:true,
       resultField: 'list',
       labelField:'name',
@@ -272,10 +276,12 @@ export const formSchema: FormSchema[] = [
     label: '作业日期',
     helpMessage: ['作业日期'],
     component: 'DatePicker',
+    defaultValue:moment().hours(12).minutes(0).seconds(0),
     componentProps: {
       'show-time': true,
       valueFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ',
       style: { width: '100%' },
+    
     },
     colProps: { span: 12 },
   },
@@ -284,9 +290,10 @@ export const formSchema: FormSchema[] = [
     label: '截止日期',
     helpMessage: ['作业截止日期'],
     component: 'DatePicker',
+    defaultValue:moment().hours(23).minutes(59).seconds(59),
     componentProps: {
       'show-time': true,
-      valueFormat: 'YYYY-MM-DD HH:mm:ss',
+      valueFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ',
       style: { width: '100%' },
     },
     colProps: { span: 12 },
@@ -350,4 +357,18 @@ export const formSchema: FormSchema[] = [
     },
   },
 ];
+export const shareFormSchema = formSchema.map(item => {
+  if (item.field === 'studentId') {
+    return {
+      field: 'studentName',
+      label: '学生',
+      component: 'Input',
+      componentProps: {
+        placeholder: '请输入学生姓名',
+      },
+      colProps: { span: 12 },
+    };
+  }
+  return item;
+});
 

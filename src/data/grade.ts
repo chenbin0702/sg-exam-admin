@@ -4,7 +4,7 @@ interface Grade {
   yearName?: string;
 }
 
-interface SchoolStage {
+export interface SchoolStage {
   stage: string;
   grades: Grade[];
 }
@@ -255,4 +255,24 @@ export function updateSubjectOptions(grade: string,formSchema: FormSchema[],key=
       }
     } 
   }
+}
+
+// 根据阶段获取年级选项
+export function getGradeOptions(stage: string) {
+  const selectedStage = schoolStages.find(s => s.stage === stage);
+  return selectedStage?.grades.map(g => ({
+    label: g.yearName,
+    value: g.year,
+  }));
+}
+
+// 根据年级和阶段获取科目选项
+
+export function getSubjectOptions(grade: string,stage: string) {
+  const selectedStage = schoolStages.find(s => s.stage === stage);
+  const selectedGrade = selectedStage?.grades.find(g => g.yearName === grade);
+  return Object.keys(selectedGrade.courses).map(course => ({
+    label: course,
+    value: course,
+  }));
 }

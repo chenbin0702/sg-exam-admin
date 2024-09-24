@@ -67,10 +67,10 @@ export function downloadByUrl({
   const isChrome = window.navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
   const isSafari = window.navigator.userAgent.toLowerCase().indexOf('safari') > -1;
 
-  if (/(iP)/g.test(window.navigator.userAgent)) {
-    console.error('Your browser does not support download!');
-    return false;
-  }
+  // if (/(iP)/g.test(window.navigator.userAgent)) {
+  //   console.error('Your browser does not support download!');
+  //   return false;
+  // }
   if (isChrome || isSafari) {
     const link = document.createElement('a');
     link.href = url;

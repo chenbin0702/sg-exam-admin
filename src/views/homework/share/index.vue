@@ -16,7 +16,7 @@ export default defineComponent({
   setup() {
     const [registerModal,{ openModal }] = useModal();
     const route = useRoute();
-    let record = reactive(JSON.parse(route.query.record))
+    let record = {...route.query}
     setTimeout(()=>{
       openModal(true,{
         record

@@ -20,6 +20,11 @@
               ifShow: record.status=='0',
             },
             {
+              tooltip:'复制',
+              icon:'ant-design:copy-outlined',
+              onClick:handleCopy.bind(null,record),
+            },
+            {
               icon: 'ant-design:eye-outlined',
               tooltip: '查看',
               onClick: handleLook.bind(null, record),
@@ -103,7 +108,7 @@ export default defineComponent({
       },
       searchInfo:{
         type:'1',
-        creatId:String(userStore.getUserInfo?.id)
+        // creatId:String(userStore.getUserInfo?.id)
       },
       fetchSetting: {
         pageField: "page",
@@ -158,7 +163,19 @@ export default defineComponent({
     // 分享 
     function handleShare(record: Recordable) {
       // 路由跳转
-      go({path:'/share/homework',query:{record:JSON.stringify(record)}})
+      let data={
+        ...record,
+      }
+      let remark = JSON.parse(data.remark);
+      data.desc = remark.desc;
+      data.dueDate = remark.dueDate;
+      data.imageUrl = remark.imageUrl;
+      data.stage = remark.stage ? remark.stage : '';
+      delete data.remark
+      console.log(data)
+      go({path:'/share/homework',query:{
+        ...data
+      }})
     }
     function handleSuccess(isUpdate) {
       let msg = t("创建作业成功");
@@ -209,6 +226,17 @@ export default defineComponent({
         record
       })
     }
+      // 复制作业
+   function handleCopy(record: Recordable) {
+    // 复制作业 record里面的id不复制
+    let { id, ...recordWithoutId } = record;
+      openModal(true, {
+        record:recordWithoutId,
+        isUpdate: true,
+        isView: false,
+        type:'1'
+      });
+    }
     return {
       t,
       hasPermission,
@@ -224,7 +252,8 @@ export default defineComponent({
       handleLookHomework,
       handleDelete,
       handleShare,
-      handleCorrectHomework
+      handleCorrectHomework,
+      handleCopy
     };
   },
 });

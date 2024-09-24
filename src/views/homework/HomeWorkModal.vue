@@ -114,6 +114,9 @@ export default defineComponent({
         values.creatId=userStore.userInfo?.id
         values.creatName=userStore.userInfo?.name
         values.type= Type.value;
+        if(values.date)
+        values.date=dayjs(values.date).format('YYYY-MM-DDTHH:mm:ss.SSSZ')
+        if(values.studentId)
         values.studentName=UserList.value.find((item: { id: any; }) => item.id == values.studentId).name
         setModalProps({ confirmLoading: true });
         id ? values.id = id : null;
